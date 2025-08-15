@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>AUT Gambling Simulator</title>
+        <link rel="stylesheet" href="style.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Germania+One&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet"
+        />
+        <script src="skinlist.js" defer></script>
+        <script src="client.js" defer></script>
+    </head>
+    <body>
+        <div id="pattern-container"></div>
+        <div id="main-container">
+            <div id="inventory"></div>
+            <div id="roller">
+                <div id="result"></div>
+                <h3 id="totalrolls">Total Rolls: 0</h3>
+                <h3 id="pity">Pity: 0</h3>
+                <button id="r1">Roll 1x</button>
+                <button id="r10">Roll 10x</button>
+                <button id="r100">Roll 100x</button>
+            </div>
+        </div>
+        <div id="calcframe">
+            Unusual Calculation:
+            <input id="unucalc" type="text" value="( 1 / 9000 ) * skinRarity" />
+        </div>
+        <div id="calcresults">
+            Unusual Chances: Universal: 0.0001% | Mythic: 0.001% | Legendary:
+            0.01% | Epic: 0.1% | Rare: 1%
+        </div>
+        <div id="buttonlist">
+            <button id="ClearAll">Clear All</button>
+            <button id="ClearDupes">Clear Duplicates</button>
+            <button id="ClearER">Clear Epics & Rares</button>
+            <button id="AutoClearER">Auto Clear Epics & Rares: OFF</button>
+        </div>
+    </body>
+</html>

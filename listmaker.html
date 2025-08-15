@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Quick List → JS Array</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <style>
+            :root {
+                --bg: #0f172a;
+                --panel: #111827;
+                --muted: #94a3b8;
+                --ring: #60a5fa;
+                --ok: #22c55e;
+                --bad: #ef4444;
+            }
+            html,
+            body {
+                height: 100%;
+            }
+            body {
+                margin: 0;
+                font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter,
+                    Arial, sans-serif;
+                background: linear-gradient(
+                    135deg,
+                    #0b1020 0%,
+                    #0f172a 50%,
+                    #0b1020 100%
+                );
+                color: #e5e7eb;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+            }
+            .card {
+                width: min(900px, 100%);
+                background: rgba(17, 24, 39, 0.8);
+                backdrop-filter: blur(6px);
+                border: 1px solid rgba(255, 255, 255, 0.06);
+                border-radius: 14px;
+                padding: 20px 18px 16px;
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+            }
+            h1 {
+                font-size: 20px;
+                margin: 0 0 10px;
+                letter-spacing: 0.3px;
+            }
+            .row {
+                display: flex;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .input-wrap {
+                flex: 1 1 320px;
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                position: relative;
+            }
+            input[type="text"] {
+                flex: 1;
+                font-size: 16px;
+                padding: 12px 14px;
+                border-radius: 10px;
+                border: 1px solid #1f2937;
+                outline: none;
+                background: #0b1220;
+                color: #e5e7eb;
+            }
+            input[type="text"]:focus {
+                border-color: var(--ring);
+                box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+            }
+            .hint {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 6px;
+            }
+            button {
+                border: 1px solid #1f2937;
+                background: #0b1220;
+                color: #e5e7eb;
+                padding: 10px 14px;
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            button:focus {
+                outline: none;
+                box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25);
+            }
+            button.primary {
+                background: #1e293b;
+                border-color: #334155;
+            }
+            button.ok {
+                background: #0b2a15;
+                border-color: #12361b;
+            }
+            button.bad {
+                background: #2a0b0b;
+                border-color: #3b1111;
+            }
+            .chips {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 14px 0 8px;
+                min-height: 38px;
+                padding: 4px 0;
+                border-top: 1px dashed #243244;
+                border-bottom: 1px dashed #243244;
+            }
+            .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 14px;
+                padding: 8px 10px;
+                background: #0b1220;
+                border: 1px solid #1f2937;
+                border-radius: 999px;
+            }
+            .chip button {
+                padding: 0;
+                width: 22px;
+                height: 22px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                border: 1px solid #253042;
+                background: #121a2b;
+                line-height: 0;
+            }
+            .panel {
+                display: flex;
+                gap: 10px;
+                align-items: center;
+                flex-wrap: wrap;
+                margin: 10px 0 0;
+            }
+            .panel label {
+                font-size: 13px;
+                color: var(--muted);
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .export {
+                margin-top: 12px;
+                background: #0b1220;
+                border: 1px solid #1f2937;
+                border-radius: 10px;
+                padding: 10px;
+            }
+            .export textarea {
+                width: 100%;
+                min-height: 90px;
+                resize: vertical;
+                border: 1px dashed #253042;
+                border-radius: 8px;
+                background: #050a16;
+                color: #e5e7eb;
+                padding: 8px 10px;
+                font-family: ui-monospace, SFMono-Regular, Menlo, Monaco,
+                    Consolas, "Liberation Mono", "Courier New", monospace;
+                font-size: 13px;
+            }
+            .counts {
+                font-size: 12px;
+                color: var(--muted);
+                margin-left: auto;
+            }
+            .spacer {
+                flex: 1;
+            }
+            .sr {
+                position: absolute;
+                width: 1px;
+                height: 1px;
+                padding: 0;
+                margin: -1px;
+                overflow: hidden;
+                clip: rect(0, 0, 0, 0);
+                border: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div
+            class="card"
+            role="application"
+            aria-label="Quick List to JavaScript Array"
+        >
+            <h1>Quick List → JS Array</h1>
+
+            <div class="row">
+                <div class="input-wrap">
+                    <label for="itemInput" class="sr">Item input</label>
+                    <input
+                        id="itemInput"
+                        type="text"
+                        placeholder="Type a name, then press Enter…"
+                        autocomplete="off"
+                    />
+                    <button id="addBtn" class="primary" title="Add item">
+                        Add
+                    </button>
+                </div>
+                <button id="clearBtn" class="bad" title="Clear list">
+                    Clear
+                </button>
+                <div class="counts" id="counts" aria-live="polite">0 items</div>
+            </div>
+            <div class="hint">
+                Tips: Press <strong>Enter</strong> to add • Paste multiple lines
+                to add many at once • Press <strong>Backspace</strong> on an
+                empty input to remove the last item.
+            </div>
+
+            <div
+                id="chips"
+                class="chips"
+                aria-live="polite"
+                aria-label="Current items"
+            ></div>
+
+            <div class="panel">
+                <label
+                    ><input type="checkbox" id="dedupe" checked /> Dedupe</label
+                >
+                <label
+                    ><input type="checkbox" id="trim" checked /> Trim
+                    whitespace</label
+                >
+                <label><input type="checkbox" id="sort" /> Sort A→Z</label>
+                <div class="spacer"></div>
+                <button
+                    id="exportBtn"
+                    class="ok"
+                    title="Export to JavaScript array"
+                >
+                    Export
+                </button>
+                <button
+                    id="copyBtn"
+                    class="primary"
+                    title="Copy export to clipboard"
+                >
+                    Copy
+                </button>
+                <button
+                    id="downloadBtn"
+                    class="primary"
+                    title="Download .js file"
+                >
+                    Download
+                </button>
+            </div>
+
+            <div class="export">
+                <label for="exportArea" class="sr"
+                    >Exported JavaScript array</label
+                >
+                <textarea
+                    id="exportArea"
+                    placeholder="Exported JavaScript will appear here…"
+                    aria-label="Exported JavaScript code"
+                ></textarea>
+            </div>
+        </div>
+
+        <script>
+            const input = document.getElementById("itemInput");
+            const chips = document.getElementById("chips");
+            const counts = document.getElementById("counts");
+
+            const addBtn = document.getElementById("addBtn");
+            const clearBtn = document.getElementById("clearBtn");
+
+            const dedupeCb = document.getElementById("dedupe");
+            const trimCb = document.getElementById("trim");
+            const sortCb = document.getElementById("sort");
+
+            const exportBtn = document.getElementById("exportBtn");
+            const copyBtn = document.getElementById("copyBtn");
+            const downloadBtn = document.getElementById("downloadBtn");
+            const exportArea = document.getElementById("exportArea");
+
+            /** State */
+            let items = [];
+
+            function normalize(value) {
+                let v = value;
+                if (trimCb.checked) v = v.trim();
+                return v;
+            }
+
+            function addMany(raw) {
+                // Accept newline- or comma-separated chunks
+                const parts = raw
+                    .split(/\r?\n|,/) // split by newline OR comma
+                    .map(normalize)
+                    .filter(Boolean);
+
+                if (parts.length === 0) return;
+
+                for (const p of parts) {
+                    addOne(p, { silent: true });
+                }
+                afterChange();
+            }
+
+            function addOne(value, { silent = false } = {}) {
+                const v = normalize(value);
+                if (!v) return;
+
+                if (dedupeCb.checked) {
+                    // Case-sensitive dedupe (toggle here if you want case-insensitive)
+                    if (items.includes(v)) return;
+                }
+                items.push(v);
+                if (!silent) afterChange();
+            }
+
+            function removeAt(idx) {
+                items.splice(idx, 1);
+                afterChange();
+            }
+
+            function afterChange() {
+                if (sortCb.checked) {
+                    items = [...items].sort((a, b) => a.localeCompare(b));
+                }
+                render();
+                updateCounts();
+                // Keep focus on input for rapid-fire entry
+                input.focus();
+            }
+
+            function updateCounts() {
+                counts.textContent = `${items.length} ${
+                    items.length === 1 ? "item" : "items"
+                }`;
+            }
+
+            function render() {
+                chips.innerHTML = "";
+                items.forEach((name, idx) => {
+                    const chip = document.createElement("span");
+                    chip.className = "chip";
+                    chip.setAttribute("data-index", idx);
+                    chip.innerHTML = `
+          <span>${escapeHtml(name)}</span>
+          <button type="button" title="Remove ${escapeHtml(
+              name
+          )}" aria-label="Remove ${escapeHtml(name)}">×</button>
+        `;
+                    chip.querySelector("button").addEventListener("click", () =>
+                        removeAt(idx)
+                    );
+                    chips.appendChild(chip);
+                });
+                // Keep export in sync if it already has content
+                if (exportArea.value.trim()) doExport();
+            }
+
+            function doExport() {
+                const arrayLiteral = toJsArray(items);
+                exportArea.value = arrayLiteral;
+            }
+
+            function toJsArray(arr) {
+                // Build a pretty JS array with double-quoted, escaped strings.
+                const escaped = arr.map((s) => JSON.stringify(String(s)));
+                const body = escaped.join(", ");
+                return `const list = [${body}];`;
+            }
+
+            function copyExport() {
+                if (!exportArea.value.trim()) doExport();
+                exportArea.select();
+                document.execCommand("copy");
+                toast("Copied!");
+                input.focus();
+            }
+
+            function downloadExport() {
+                if (!exportArea.value.trim()) doExport();
+                const blob = new Blob([exportArea.value + "\n"], {
+                    type: "text/javascript;charset=utf-8",
+                });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "list.js";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            }
+
+            function toast(msg) {
+                const el = document.createElement("div");
+                el.textContent = msg;
+                el.style.position = "fixed";
+                el.style.bottom = "18px";
+                el.style.left = "50%";
+                el.style.transform = "translateX(-50%)";
+                el.style.background = "#0b1220";
+                el.style.border = "1px solid #1f2937";
+                el.style.padding = "8px 12px";
+                el.style.borderRadius = "999px";
+                el.style.fontSize = "13px";
+                el.style.opacity = "0";
+                el.style.transition = "opacity .15s ease";
+                document.body.appendChild(el);
+                requestAnimationFrame(() => {
+                    el.style.opacity = "1";
+                });
+                setTimeout(() => {
+                    el.style.opacity = "0";
+                    setTimeout(() => el.remove(), 200);
+                }, 900);
+            }
+
+            function escapeHtml(s) {
+                return s.replace(
+                    /[&<>"']/g,
+                    (c) =>
+                        ({
+                            "&": "&amp;",
+                            "<": "&lt;",
+                            ">": "&gt;",
+                            '"': "&quot;",
+                            "'": "&#39;",
+                        }[c])
+                );
+            }
+
+            /** Event wiring */
+            input.addEventListener("keydown", (e) => {
+                // Enter adds; ignore if composition in progress (IME)
+                if (e.key === "Enter" && !e.isComposing) {
+                    e.preventDefault();
+                    addMany(input.value || "");
+                    input.value = "";
+                }
+                // Backspace on empty input removes the last chip
+                if (
+                    e.key === "Backspace" &&
+                    input.value === "" &&
+                    items.length
+                ) {
+                    e.preventDefault();
+                    items.pop();
+                    afterChange();
+                }
+            });
+
+            // Paste multiple lines to add many at once
+            input.addEventListener("paste", (e) => {
+                const text = e.clipboardData.getData("text");
+                if (text && (text.includes("\n") || text.includes(","))) {
+                    e.preventDefault();
+                    addMany(text);
+                }
+            });
+
+            addBtn.addEventListener("click", () => {
+                addMany(input.value || "");
+                input.value = "";
+            });
+
+            clearBtn.addEventListener("click", () => {
+                if (!items.length) return;
+                if (confirm("Clear the entire list?")) {
+                    items = [];
+                    afterChange();
+                    exportArea.value = "";
+                }
+            });
+
+            dedupeCb.addEventListener("change", afterChange);
+            trimCb.addEventListener("change", afterChange);
+            sortCb.addEventListener("change", afterChange);
+
+            exportBtn.addEventListener("click", doExport);
+            copyBtn.addEventListener("click", copyExport);
+            downloadBtn.addEventListener("click", downloadExport);
+
+            // Focus input on load for quick entry
+            window.addEventListener("load", () => input.focus());
+        </script>
+    </body>
+</html>
