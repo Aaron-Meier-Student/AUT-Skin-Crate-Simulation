@@ -68,20 +68,17 @@ const inventoryDiv = document.getElementById("inventory");
 
 let pity = 0;
 
-// We'll store inventory data here
-// { "skinName": { count: number, unique: bool, rarity: string } }
 const inventory = {};
 let autoDeleteRare = false;
 let autoDeleteEpic = false;
 
 function addToInventory(skinData) {
-    // Auto-delete Rare check
     if (autoDeleteRare && skinData.rarity === "Rare") {
-        return; // skip adding it
+        return;
     }
 
     if (autoDeleteEpic && skinData.rarity === "Epic") {
-        return; // skip adding it
+        return;
     }
 
     const key = skinData.unique
@@ -89,12 +86,10 @@ function addToInventory(skinData) {
         : skinData.skin;
 
     if (!skinData.unique && inventory[skinData.skin]) {
-        // Increment count for normal skins
         inventory[skinData.skin].count++;
         updateInventoryDisplay(skinData.skin);
         sortInventory();
     } else {
-        // Add new entry (either unique or first copy)
         inventory[key] = {
             name: skinData.skin,
             count: 1,
@@ -129,11 +124,9 @@ function createInventoryItem(key) {
     inventoryDiv.appendChild(itemDiv);
 }
 
-// Define rarity order from highest to lowest
 const rarityOrder = ["Universal", "Mythic", "Legendary", "Epic", "Rare"];
 
 function updateInventoryDisplay(skinName) {
-    // Update counts as before
     const key = skinName;
     const itemDiv = Array.from(inventoryDiv.children).find(
         (div) => div.dataset.key === key
@@ -146,16 +139,13 @@ function updateInventoryDisplay(skinName) {
 }
 
 function sortInventory() {
-    // Sort inventory items by rarity
     const sortedKeys = Object.keys(inventory).sort((a, b) => {
         const rarityA = inventory[a].rarity;
         const rarityB = inventory[b].rarity;
 
-        // Higher rarity comes first
         return rarityOrder.indexOf(rarityA) - rarityOrder.indexOf(rarityB);
     });
 
-    // Re-append items in sorted order
     sortedKeys.forEach((key) => {
         const div = Array.from(inventoryDiv.children).find(
             (d) => d.dataset.key === key
@@ -197,7 +187,6 @@ function rollSkin() {
     let isUnique = false;
 
     if (["Legendary", "Mythic", "Universal"].includes(rarity)) {
-        // unusualCalculate now returns a single chance number for the group
         const skinChance = unusualCalculate(rarity);
 
         isUnique = Math.random() < skinChance;
@@ -210,14 +199,11 @@ function rollSkin() {
     };
 }
 
-
-
 function truncateRepeats(num, decimalPlaces = 6) {
     const numStr = num.toString();
     const [intPart, decPart] = numStr.split(".");
     if (!decPart) return numStr;
 
-    // Find first sequence of repeated digits at the end
     let endIndex = decPart.length;
     for (let i = decPart.length - 3; i >= 0; i--) {
         if (decPart[i] !== decPart[i + 1]) break;
@@ -247,11 +233,26 @@ function checkcalcinput() {
         newrarities[r] = chance * 100;
     });
     results.innerHTML = `<strong style='color:#924eff'>Unusual Chances:</strong>
-    <font color='#676767'>${expectedRollsString(rarities.Universal, newrarities.Universal)}</font> |
-    <font color='#fa5400'>${expectedRollsString(rarities.Mythic, newrarities.Mythic)}</font> |
-    <font color='#ff964b'>${expectedRollsString(rarities.Legendary, newrarities.Legendary)}</font> |
-    <strike><font color='#af5aff'>${expectedRollsString(rarities.Epic, newrarities.Epic)}</font> |
-    <font color='#4b96ff'>${expectedRollsString(rarities.Rare, newrarities.Rare)}</font></strike> |
+    <font color='#676767'>${expectedRollsString(
+        rarities.Universal,
+        newrarities.Universal
+    )}</font> |
+    <font color='#fa5400'>${expectedRollsString(
+        rarities.Mythic,
+        newrarities.Mythic
+    )}</font> |
+    <font color='#ff964b'>${expectedRollsString(
+        rarities.Legendary,
+        newrarities.Legendary
+    )}</font> |
+    <strike><font color='#af5aff'>${expectedRollsString(
+        rarities.Epic,
+        newrarities.Epic
+    )}</font> |
+    <font color='#4b96ff'>${expectedRollsString(
+        rarities.Rare,
+        newrarities.Rare
+    )}</font></strike> |
     <strong>Skin Rarities (Group): </strong>
     <font color='#676767'>${rarities.Universal}%</font> |
     <font color='#fa5400'>${rarities.Mythic}%</font> |
@@ -259,7 +260,7 @@ function checkcalcinput() {
     <font color='#af5aff'>${rarities.Epic}%</font> |
     <font color='#4b96ff'>${rarities.Rare}%</font>`;
 }
-// Optional: recalc on input change
+
 document.getElementById("unucalc").addEventListener("input", checkcalcinput);
 checkcalcinput();
 function pickRarity() {
@@ -317,7 +318,6 @@ function displayResults(results) {
         )
         .join("");
 
-    // Also update inventory
     results.forEach((skin) => addToInventory(skin));
 }
 const uniqueCounts = {
@@ -326,32 +326,40 @@ const uniqueCounts = {
     Universal: 0,
 };
 
-// Expected rolls per skin type
 const expectedRolls = {
-    Legendary: expectedRollsString(rarities.Legendary, unusualCalculate("Legendary")*100),
-    Mythic: expectedRollsString(rarities.Mythic, unusualCalculate("Mythic")*100),
-    Universal: expectedRollsString(rarities.Universal, unusualCalculate("Universal")*100),
+    Legendary: expectedRollsString(
+        rarities.Legendary,
+        unusualCalculate("Legendary") * 100
+    ),
+    Mythic: expectedRollsString(
+        rarities.Mythic,
+        unusualCalculate("Mythic") * 100
+    ),
+    Universal: expectedRollsString(
+        rarities.Universal,
+        unusualCalculate("Universal") * 100
+    ),
 };
 
 function logUniqueStats() {
     console.log(
         `Unique Counts → Legendary: ${uniqueCounts.Legendary} (${expectedRolls.Legendary}), ` +
-        `Mythic: ${uniqueCounts.Mythic} (${expectedRolls.Mythic}), ` +
-        `Universal: ${uniqueCounts.Universal} (${expectedRolls.Universal})`
+            `Mythic: ${uniqueCounts.Mythic} (${expectedRolls.Mythic}), ` +
+            `Universal: ${uniqueCounts.Universal} (${expectedRolls.Universal})`
     );
 }
 
 document.getElementById("ClearAll").addEventListener("click", () => {
-    // Delete all skins
     Object.keys(inventory).forEach((key) => {
         delete inventory[key];
-        const itemDiv = document.querySelector(`.inventory-item[data-key="${key}"]`);
+        const itemDiv = document.querySelector(
+            `.inventory-item[data-key="${key}"]`
+        );
         if (itemDiv) itemDiv.remove();
     });
     sortInventory();
 });
 document.getElementById("ClearDupes").addEventListener("click", () => {
-    // Delete all duplicate skins
     Object.keys(inventory).forEach((key) => {
         const item = inventory[key];
         if (item.count > 1) {
@@ -362,12 +370,13 @@ document.getElementById("ClearDupes").addEventListener("click", () => {
     sortInventory();
 });
 document.getElementById("ClearER").addEventListener("click", () => {
-    // Delete all Epic and Rare skins
     Object.keys(inventory).forEach((key) => {
         const item = inventory[key];
         if (item.rarity === "Epic" || item.rarity === "Rare") {
             delete inventory[key];
-            const itemDiv = document.querySelector(`.inventory-item[data-key="${key}"]`);
+            const itemDiv = document.querySelector(
+                `.inventory-item[data-key="${key}"]`
+            );
             if (itemDiv) itemDiv.remove();
         }
     });
@@ -376,5 +385,7 @@ document.getElementById("ClearER").addEventListener("click", () => {
 document.getElementById("AutoClearER").addEventListener("click", () => {
     autoDeleteEpic = !autoDeleteEpic;
     autoDeleteRare = autoDeleteEpic;
-    document.getElementById("AutoClearER").textContent = autoDeleteEpic ? "Auto Clear Epics & Rares: ON" : "Auto Clear Epics & Rares: OFF";
+    document.getElementById("AutoClearER").textContent = autoDeleteEpic
+        ? "Auto Clear Epics & Rares: ON"
+        : "Auto Clear Epics & Rares: OFF";
 });
